@@ -37,5 +37,12 @@ fn main() {
     println!(
         "If you want to use rust-analyzer, Rust's LSP implementation, make sure your editor is set"
     );
-    println!("up, and then run `rustlings lsp` before continuing.")
+    println!("up, and then run `rustlings lsp` before continuing.");
+    println!();
+    println!("  _   _      _ _         __        __         _     _ _ ");
+    println!(" | | | | ___| | | ___    \\ \\      / /__  _ __| | __| | |");
+    println!(" | |_| |/ _ \\ | |/ _ \\    \\ \\ /\\ / / _ \\| '__| |/ _` | |");
+    println!(" |  _  |  __/ | | (_) |    \\ V  V / (_) | |  | | (_| |_|");
+    println!(" |_| |_|\\___|_|_|\\___( )    \\_/\\_/ \\___/|_|  |_|\\__,_(_)");
+    println!("                     |/                               ");
 }

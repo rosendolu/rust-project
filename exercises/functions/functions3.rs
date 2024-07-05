@@ -6,11 +6,11 @@
 // I AM NOT DONE
 
 fn main() {
-    call_me();
+    call_me(u32::MAX);
 }
 
 fn call_me(num: u32) {
-    for i in 0..num {
-        println!("Ring! Call number {}", i + 1);
+    for i in num - 1..=num {
+        println!("Ring! Call number {:?}", i.wrapping_add(1));
     }
 }

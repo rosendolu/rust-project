@@ -6,10 +6,10 @@
 // I AM NOT DONE
 
 fn main() {
-    call_me(3);
+    call_me(usize::MAX);
 }
 
-fn call_me(num:) {
+fn call_me(num: usize) {
     for i in 0..num {
         println!("Ring! Call number {}", i + 1);
     }

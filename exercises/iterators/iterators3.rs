@@ -26,23 +26,32 @@ pub struct NotDivisibleError {
 // Calculate `a` divided by `b` if `a` is evenly divisible by `b`.
 // Otherwise, return a suitable error.
 pub fn divide(a: i32, b: i32) -> Result<i32, DivisionError> {
-    todo!();
+    if b == 0 {
+        return Err(DivisionError::DivideByZero);
+    }
+    match a.checked_rem(b) {
+        Some(0) => Ok(a / b),
+        Some(_) | None => Err(DivisionError::NotDivisible(NotDivisibleError {
+            dividend: a,
+            divisor: b,
+        })),
+    }
 }
 
 // Complete the function and return a value of the correct type so the test
 // passes.
 // Desired output: Ok([1, 11, 1426, 3])
-fn result_with_list() -> () {
+fn result_with_list() -> Result<Vec<i32>, DivisionError> {
     let numbers = vec![27, 297, 38502, 81];
-    let division_results = numbers.into_iter().map(|n| divide(n, 27));
+    numbers.into_iter().map(|n| divide(n, 27)).collect()
 }
 
 // Complete the function and return a value of the correct type so the test
 // passes.
 // Desired output: [Ok(1), Ok(11), Ok(1426), Ok(3)]
-fn list_of_results() -> () {
+fn list_of_results() -> Vec<Result<i32, DivisionError>> {
     let numbers = vec![27, 297, 38502, 81];
-    let division_results = numbers.into_iter().map(|n| divide(n, 27));
+    numbers.into_iter().map(|n| divide(n, 27)).collect()
 }
 
 #[cfg(test)]
@@ -56,8 +65,10 @@ mod tests {
 
     #[test]
     fn test_not_divisible() {
+        let a = divide(81, 6);
+        println!("a is {:?}", a);
         assert_eq!(
-            divide(81, 6),
+            a,
             Err(DivisionError::NotDivisible(NotDivisibleError {
                 dividend: 81,
                 divisor: 6
@@ -77,14 +88,17 @@ mod tests {
 
     #[test]
     fn test_result_with_list() {
-        assert_eq!(format!("{:?}", result_with_list()), "Ok([1, 11, 1426, 3])");
+        let a = result_with_list();
+        println!("a is {:?}", a);
+        assert_eq!(format!("{:?}", a), "Ok([1, 11, 1426, 3])");
     }
 
     #[test]
     fn test_list_of_results() {
-        assert_eq!(
-            format!("{:?}", list_of_results()),
-            "[Ok(1), Ok(11), Ok(1426), Ok(3)]"
-        );
+        let a = list_of_results();
+        println!("a is {:?}", a);
+
+        assert_eq!(format!("{:?}", a), "[Ok(1), Ok(11), Ok(1426), Ok(3)]");
     }
 }
+fn main() {}
