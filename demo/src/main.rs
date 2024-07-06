@@ -1,22 +1,23 @@
-// modules3.rs
+// move_semantics3.rs
 //
-// You can use the 'use' keyword to bring module paths from modules from
-// anywhere and especially from the Rust standard library into your scope. Bring
-// SystemTime and UNIX_EPOCH from the std::time module. Bonus style points if
-// you can do it with one line!
+// Make me compile without adding new lines -- just changing existing lines! (no
+// lines with multiple semicolons necessary!)
 //
-// Execute `rustlings hint modules3` or use the `hint` watch subcommand for a
-// hint.
+// Execute `rustlings hint move_semantics3` or use the `hint` watch subcommand
+// for a hint.
 
 // I AM NOT DONE
 
-use std::time::{SystemTime, UNIX_EPOCH};
-
-// TODO: Complete this use statement
-
 fn main() {
-    match SystemTime::now().duration_since(UNIX_EPOCH) {
-        Ok(n) => println!("1970-01-01 00:00:00 UTC was {} seconds ago!", n.as_secs()),
-        Err(_) => panic!("SystemTime before UNIX EPOCH!"),
-    }
+    let vec0 = vec![22, 44, 66];
+
+    let mut vec1 = fill_vec(vec0);
+
+    assert_eq!(vec1, vec![22, 44, 66, 88]);
+}
+
+fn fill_vec(mut vec: Vec<i32>) -> Vec<i32> {
+    vec.push(88);
+
+    vec
 }
