@@ -12,8 +12,7 @@ fn main() {
     if is_morning {
         println!("Good morning!");
     }
-
-    let // Finish the rest of this line like the example! Or make it be false!
+    let is_evening = false; // Finish the rest of this line like the example! Or make it be false!
     if is_evening {
         println!("Good evening!");
     }

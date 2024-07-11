@@ -16,6 +16,6 @@
 mod tests {
     #[test]
     fn you_can_assert() {
-        assert!();
+        assert_eq!(true, false);
     }
 }
