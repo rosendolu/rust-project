@@ -1,40 +1,74 @@
-// threads1.rs
+// threads3.rs
 //
-// This program spawns multiple threads that each run for at least 250ms, and
-// each thread returns how much time they took to complete. The program should
-// wait until all the spawned threads have finished and should collect their
-// return values into a vector.
-//
-// Execute `rustlings hint threads1` or use the `hint` watch subcommand for a
+// Execute `rustlings hint threads3` or use the `hint` watch subcommand for a
 // hint.
 
 // I AM NOT DONE
 
+use std::sync::{mpsc, Arc};
 use std::thread;
-use std::time::{Duration, Instant};
+use std::time::Duration;
 
-fn main() {
-    let mut handles = vec![];
-    for i in 0..10 {
-        handles.push(thread::spawn(move || {
-            let start = Instant::now();
-            thread::sleep(Duration::from_millis(250));
-            println!("thread {} is complete", i);
-            start.elapsed().as_millis()
-        }));
-    }
+struct Queue {
+    length: u32,
+    first_half: Vec<u32>,
+    second_half: Vec<u32>,
+}
 
-    let mut results: Vec<u128> = vec![];
-    for handle in handles {
-        // TODO: a struct is returned from thread::spawn, can you use it?
-    }
-
-    if results.len() != 10 {
-        panic!("Oh no! All the spawned threads did not finish!");
-    }
-
-    println!();
-    for (i, result) in results.into_iter().enumerate() {
-        println!("thread {} took {}ms", i, result);
+impl Queue {
+    fn new() -> Self {
+        Queue {
+            length: 10,
+            first_half: vec![1, 2, 3, 4, 5],
+            second_half: vec![6, 7, 8, 9, 10],
+        }
     }
 }
+
+fn send_tx(q: Queue, tx: mpsc::Sender<u32>) -> [thread::JoinHandle<()>; 2] {
+    let qc = Arc::new(q);
+    let qc1 = Arc::clone(&qc);
+    let qc2 = Arc::clone(&qc);
+
+    let tx2 = tx.clone();
+    let handle1 = thread::spawn(move || {
+        for val in &qc1.first_half {
+            println!("sending {:?}", val);
+            tx.send(*val).unwrap();
+            thread::sleep(Duration::from_secs(1));
+        }
+    });
+
+    let handle2 = thread::spawn(move || {
+        for val in &qc2.second_half {
+            println!("sending {:?}", val);
+            tx2.send(*val).unwrap();
+            thread::sleep(Duration::from_secs(1));
+        }
+    });
+    [handle1, handle2]
+}
+
+#[test]
+fn test_main() {
+    let (tx, rx) = mpsc::channel();
+    let queue = Queue::new();
+    let queue_length = queue.length;
+
+    let handles = send_tx(queue, tx);
+
+    let mut total_received: u32 = 0;
+
+    for received in rx {
+        println!("Got: {}", received);
+        total_received += 1;
+    }
+
+    // 等待所有线程完成
+    // for handle in handles {
+    //     handle.join().unwrap();
+    // }
+    println!("total numbers received: {}", total_received);
+    assert_eq!(total_received, queue_length)
+}
+fn main() {}
