@@ -1,74 +1,71 @@
-// threads3.rs
+// quiz3.rs
 //
-// Execute `rustlings hint threads3` or use the `hint` watch subcommand for a
-// hint.
+// This quiz tests:
+// - Generics
+// - Traits
+//
+// An imaginary magical school has a new report card generation system written
+// in Rust! Currently the system only supports creating report cards where the
+// student's grade is represented numerically (e.g. 1.0 -> 5.5). However, the
+// school also issues alphabetical grades (A+ -> F-) and needs to be able to
+// print both types of report card!
+//
+// Make the necessary code changes in the struct ReportCard and the impl block
+// to support alphabetical report cards. Change the Grade in the second test to
+// "A+" to show that your changes allow alphabetical grades.
+//
+// Execute `rustlings hint quiz3` or use the `hint` watch subcommand for a hint.
 
 // I AM NOT DONE
 
-use std::sync::{mpsc, Arc};
-use std::thread;
-use std::time::Duration;
+use std::fmt::Display;
 
-struct Queue {
-    length: u32,
-    first_half: Vec<u32>,
-    second_half: Vec<u32>,
+pub struct ReportCard<T> {
+    pub grade: T,
+    pub student_name: String,
+    pub student_age: u8,
 }
 
-impl Queue {
-    fn new() -> Self {
-        Queue {
-            length: 10,
-            first_half: vec![1, 2, 3, 4, 5],
-            second_half: vec![6, 7, 8, 9, 10],
-        }
+impl<T> ReportCard<T>
+where
+    T: Display,
+{
+    pub fn print(&self) -> String {
+        format!(
+            "{} ({}) - achieved a grade of {}",
+            &self.student_name, &self.student_age, &self.grade
+        )
     }
 }
 
-fn send_tx(q: Queue, tx: mpsc::Sender<u32>) -> [thread::JoinHandle<()>; 2] {
-    let qc = Arc::new(q);
-    let qc1 = Arc::clone(&qc);
-    let qc2 = Arc::clone(&qc);
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-    let tx2 = tx.clone();
-    let handle1 = thread::spawn(move || {
-        for val in &qc1.first_half {
-            println!("sending {:?}", val);
-            tx.send(*val).unwrap();
-            thread::sleep(Duration::from_secs(1));
-        }
-    });
-
-    let handle2 = thread::spawn(move || {
-        for val in &qc2.second_half {
-            println!("sending {:?}", val);
-            tx2.send(*val).unwrap();
-            thread::sleep(Duration::from_secs(1));
-        }
-    });
-    [handle1, handle2]
-}
-
-#[test]
-fn test_main() {
-    let (tx, rx) = mpsc::channel();
-    let queue = Queue::new();
-    let queue_length = queue.length;
-
-    let handles = send_tx(queue, tx);
-
-    let mut total_received: u32 = 0;
-
-    for received in rx {
-        println!("Got: {}", received);
-        total_received += 1;
+    #[test]
+    fn generate_numeric_report_card() {
+        let report_card = ReportCard {
+            grade: 2.1,
+            student_name: "Tom Wriggle".to_string(),
+            student_age: 12,
+        };
+        assert_eq!(
+            report_card.print(),
+            "Tom Wriggle (12) - achieved a grade of 2.1"
+        );
     }
 
-    // 等待所有线程完成
-    // for handle in handles {
-    //     handle.join().unwrap();
-    // }
-    println!("total numbers received: {}", total_received);
-    assert_eq!(total_received, queue_length)
+    #[test]
+    fn generate_alphabetic_report_card() {
+        // TODO: Make sure to change the grade here after you finish the exercise.
+        let report_card = ReportCard {
+            grade: "A+",
+            student_name: "Gary Plotter".to_string(),
+            student_age: 11,
+        };
+        assert_eq!(
+            report_card.print(),
+            "Gary Plotter (11) - achieved a grade of A+"
+        );
+    }
 }
-fn main() {}

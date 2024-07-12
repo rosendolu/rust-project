@@ -16,7 +16,12 @@
 // I AM NOT DONE
 
 // Put your function here!
-// fn calculate_price_of_apples {
+fn calculate_price_of_apples(val: u8) -> u8 {
+    if val > 40 {
+        return val;
+    }
+    val * 2
+}
 
 // Don't modify this function!
 #[test]
